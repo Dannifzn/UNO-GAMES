@@ -126,7 +126,7 @@
       });
 
       for (let i = 0; i < 8; i++) {
-        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild', type: 'wild' });
+        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild_color_roulette', type: 'wild' });
       }
       for (let i = 0; i < 4; i++) {
         cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild_draw6', type: 'wild' });

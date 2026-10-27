@@ -237,8 +237,7 @@ const UI = {
         if (val === 'wild_draw6') return 'nomercy_wild_draw6.png';
         if (val === 'wild_draw10') return 'nomercy_wild_draw10.png';
         if (val === 'wild_reverse_draw4') return 'nomercy_wild_reverse_draw4.png';
-        if (val === 'wild_color_roulette') return 'nomercy_wild_color_roulette.png';
-        return 'nomercy_wild.png';
+        return 'nomercy_wild_color_roulette.png';
       }
       return `nomercy_${color}_${val}.png`;
     } else {
@@ -329,6 +328,15 @@ const UI = {
     img.src = imgSrc;
     img.alt = `${face.color} ${face.value}`;
     img.loading = 'lazy';
+    img.onerror = () => {
+      if (mode === 'no_mercy') {
+        img.src = 'assets/cards/sliced/nomercy_wild_color_roulette.png';
+      } else if (mode === 'flip') {
+        img.src = side === 'dark' ? 'assets/cards/sliced/flip_dark_wild.png' : 'assets/cards/sliced/flip_light_wild.png';
+      } else {
+        img.src = 'assets/cards/sliced/classic_wild.png';
+      }
+    };
     faceEl.appendChild(img);
 
     return faceEl;
