@@ -594,6 +594,10 @@ class UnoGame {
     this.advanceTurn(1);
   }
 
+  drawFromDeckForPlayer(playerId) {
+    return this.playerDraw(playerId);
+  }
+
   playerDraw(playerId) {
     const player = this.players.find(p => p.id === playerId);
     if (!player || player.id !== this.getCurrentPlayer().id) {

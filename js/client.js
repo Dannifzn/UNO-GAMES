@@ -360,12 +360,17 @@ socket.on('uno_call_result', res => {
 });
 
 // Draw Card Deck click
-document.getElementById('draw-deck-pile').addEventListener('click', () => {
-  if (currentGameState && currentGameState.currentTurnPlayerId === myPlayerId) {
-    soundManager.drawCard();
-    socket.emit('draw_card');
-  }
-});
+const drawDeckEl = document.getElementById('draw-deck-pile');
+if (drawDeckEl) {
+  drawDeckEl.addEventListener('click', () => {
+    if (currentGameState && currentGameState.currentTurnPlayerId === myPlayerId) {
+      soundManager.drawCard();
+      socket.emit('draw_card');
+    } else {
+      UI.showToast('Bukan giliran Anda!', 'error');
+    }
+  });
+}
 
 // ==========================================
 // SOCKET EVENTS

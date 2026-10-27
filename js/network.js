@@ -161,7 +161,7 @@ class NetworkManager {
         break;
       }
       case 'draw_card': {
-        const res = game.drawFromDeckForPlayer(this.playerId);
+        const res = game.playerDraw(this.playerId);
         if (!res.success) {
           this.trigger('action_failed', res.message);
         } else {
@@ -242,10 +242,10 @@ class NetworkManager {
         if (move.action === 'play_card') {
           this.localGame.playCard(current.id, move.cardId, move.chosenColor, move.targetSwapPlayerId);
         } else if (move.action === 'draw_card') {
-          this.localGame.drawFromDeckForPlayer(current.id);
+          this.localGame.playerDraw(current.id);
         }
       } else {
-        this.localGame.drawFromDeckForPlayer(current.id);
+        this.localGame.playerDraw(current.id);
       }
 
       this.broadcastLocalState();
@@ -411,7 +411,7 @@ class NetworkManager {
         break;
       }
       case 'draw_card': {
-        const res = game.drawFromDeckForPlayer(senderId);
+        const res = game.playerDraw(senderId);
         if (!res.success) {
           this.sendToPeer(senderId, 'action_failed', res.message);
         } else {
