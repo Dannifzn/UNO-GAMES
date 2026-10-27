@@ -1,4 +1,4 @@
-const socket = io();
+const socket = window.networkManager;
 
 // State
 let myPlayerId = null;
@@ -257,67 +257,68 @@ if (peekFlipBtn) {
 // LOBBY ACTIONS
 // ==========================================
 
-// Quick Play vs AI
+// Quick Play vs AI (Standalone in Browser)
 document.getElementById('btn-play-ai').addEventListener('click', () => {
   soundManager.init();
-  const name = document.getElementById('player-name-input').value.trim() || 'Player';
+  const name = document.getElementById('player-name-input').value.trim() || 'Pemain 1';
   const mode = document.querySelector('input[name="game-mode"]:checked').value;
   const stacking = document.getElementById('setting-stacking').checked;
   const mercyKnockout = document.getElementById('setting-mercy').checked;
   const allowSevenZero = document.getElementById('setting-seven-zero').checked;
   const endGameCondition = document.getElementById('setting-end-condition').value;
 
-  socket.emit('create_room', {
-    name,
-    mode,
+  socket.startLocalGame(name, mode, {
     stacking,
     mercyKnockout,
     allowSevenZero,
     endGameCondition
   });
-
-  // Auto add 3 bots after room creation
-  socket.once('room_created', () => {
-    socket.emit('add_bot');
-    socket.emit('add_bot');
-    socket.emit('add_bot');
-    setTimeout(() => {
-      socket.emit('start_game');
-    }, 400);
-  });
 });
 
-// Create Room for Friends
+// Create Room for Friends (P2P WebRTC or Socket.IO fallback)
 document.getElementById('btn-create-room').addEventListener('click', () => {
   soundManager.init();
-  const name = document.getElementById('player-name-input').value.trim() || 'Player';
+  const name = document.getElementById('player-name-input').value.trim() || 'Host';
   const mode = document.querySelector('input[name="game-mode"]:checked').value;
   const stacking = document.getElementById('setting-stacking').checked;
   const mercyKnockout = document.getElementById('setting-mercy').checked;
   const allowSevenZero = document.getElementById('setting-seven-zero').checked;
   const endGameCondition = document.getElementById('setting-end-condition').value;
 
-  socket.emit('create_room', {
-    name,
-    mode,
-    stacking,
-    mercyKnockout,
-    allowSevenZero,
-    endGameCondition
-  });
+  if (socket.socket && socket.socket.connected) {
+    socket.socket.emit('create_room', {
+      name,
+      mode,
+      stacking,
+      mercyKnockout,
+      allowSevenZero,
+      endGameCondition
+    });
+  } else {
+    socket.createP2PRoom(name, mode, {
+      stacking,
+      mercyKnockout,
+      allowSevenZero,
+      endGameCondition
+    });
+  }
 });
 
-// Join Room
+// Join Room (P2P WebRTC or Socket.IO fallback)
 document.getElementById('btn-join-room').addEventListener('click', () => {
   soundManager.init();
-  const name = document.getElementById('player-name-input').value.trim() || 'Player';
-  const roomId = document.getElementById('join-room-input').value.trim();
+  const name = document.getElementById('player-name-input').value.trim() || 'Pemain';
+  const roomId = document.getElementById('join-room-input').value.trim().toUpperCase();
 
   if (!roomId) {
     return UI.showToast('Masukkan kode room terlebih dahulu!', 'error');
   }
 
-  socket.emit('join_room', { roomId, name });
+  if (socket.socket && socket.socket.connected) {
+    socket.socket.emit('join_room', { roomId, name });
+  } else {
+    socket.joinP2PRoom(roomId, name);
+  }
 });
 
 // Waiting Room Controls
@@ -371,18 +372,25 @@ document.getElementById('draw-deck-pile').addEventListener('click', () => {
 // ==========================================
 
 socket.on('connect', () => {
-  myPlayerId = socket.id;
+  myPlayerId = socket.playerId || socket.id;
 });
 
 socket.on('room_created', data => {
+  myPlayerId = socket.playerId || data.hostId || socket.id;
   currentRoomId = data.roomId;
   isHost = true;
   document.getElementById('display-room-code').textContent = data.roomId;
-  showView('view-waiting-room');
-  UI.showToast(`Room ${data.roomId} dibuat!`);
+
+  if (data.roomId.startsWith('LOCAL_')) {
+    showView('view-game-arena');
+  } else {
+    showView('view-waiting-room');
+    UI.showToast(`Room ${data.roomId} dibuat!`);
+  }
 });
 
 socket.on('room_joined', data => {
+  myPlayerId = socket.playerId || socket.id;
   currentRoomId = data.roomId;
   isHost = data.isHost;
   document.getElementById('display-room-code').textContent = data.roomId;
@@ -401,7 +409,11 @@ socket.on('action_failed', msg => {
 // Main Game State Update Handler
 socket.on('game_state_update', state => {
   currentGameState = state;
-  isHost = state.isHost;
+  if (!myPlayerId && state.players) {
+    const me = state.players.find(p => p.hand !== null);
+    if (me) myPlayerId = me.id;
+  }
+  isHost = state.isHost !== undefined ? state.isHost : isHost;
 
   if (!state.gameOver && !document.getElementById('view-game-arena').offsetParent && state.players.length >= 2 && state.deckCount > 0) {
     showView('view-game-arena');

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNO Online - Klasik, Flip & No Mercy</title>
+  <meta name="description" content="Mainkan game UNO online bersama teman atau versus A.I. Lengkap dengan mode Klasik, UNO Flip (Light & Dark Side), dan UNO Show 'Em No Mercy!">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cards.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-wrapper">
+      <div class="logo-badge">UNO!</div>
+      <div class="logo-text">Online Arena</div>
+    </div>
+    <div class="header-actions">
+      <button id="btn-open-rules-header" class="btn-header" title="Lihat Panduan Aturan">
+        <span>📖</span> Panduan Aturan
+      </button>
+      <button id="sound-toggle-btn" class="btn-icon" title="Toggle Suara">🔊</button>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main Container -->
+  <main id="app">
+
+    <!-- ==============================================
+         VIEW 1: LOBBY & ROOM CREATION
+         ============================================== -->
+    <div id="view-lobby" class="app-view lobby-container">
+      <div class="hero-banner">
+        <h1 class="hero-title">UNO Web Arena</h1>
+        <p class="hero-subtitle">Bermain bersama teman lewat room multiplayer atau uji strategimu versus A.I.</p>
+      </div>
+
+      <div class="lobby-grid">
+        <!-- Panel 1: Buat Room / Main vs AI -->
+        <div class="glass-panel card-box">
+          <div class="box-title">Pengaturan Permainan</div>
+
+          <div class="form-group">
+            <label for="player-name-input">Nama Panggilan Anda</label>
+            <input type="text" id="player-name-input" placeholder="Masukkan nama Anda..." maxlength="15" value="Pemain 1">
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Mode Game</label>
+            <div class="mode-selector">
+              <div>
+                <input type="radio" id="mode-classic" name="game-mode" value="classic" class="mode-radio" checked>
+                <label for="mode-classic" class="mode-label">
+                  <div class="mode-card-preview">
+                    <img src="assets/cards/sliced/classic_back.png" class="mode-card-back-img" alt="UNO Classic">
+                  </div>
+                  <span class="mode-name">Klasik</span>
+                  <span class="mode-desc">Aturan Resmi 108 Kartu</span>
+                </label>
+              </div>
+
+              <div>
+                <input type="radio" id="mode-flip" name="game-mode" value="flip" class="mode-radio">
+                <label for="mode-flip" class="mode-label">
+                  <div class="mode-card-preview">
+                    <img src="assets/cards/sliced/flip_light_back.png" class="mode-card-back-img" alt="UNO Flip">
+                  </div>
+                  <span class="mode-name">UNO Flip</span>
+                  <span class="mode-desc">Light & Dark Side</span>
+                </label>
+              </div>
+
+              <div>
+                <input type="radio" id="mode-no-mercy" name="game-mode" value="no_mercy" class="mode-radio">
+                <label for="mode-no-mercy" class="mode-label">
+                  <div class="mode-card-preview">
+                    <img src="assets/cards/sliced/nomercy_back.png" class="mode-card-back-img" alt="UNO No Mercy">
+                  </div>
+                  <span class="mode-name">No Mercy</span>
+                  <span class="mode-desc">+6, +10 & 25 KO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- End Game Condition Settings -->
+          <div class="form-group">
+            <label for="setting-end-condition">Kondisi Selesai Game</label>
+            <select id="setting-end-condition" class="styled-select">
+              <option value="first_winner">Juara 1 Selesai (Pemenang Pertama Langsung Menang)</option>
+              <option value="until_one_left">Main Sampai Sisa 1 Pemain (Juara Bertingkat 1, 2, 3...)</option>
+            </select>
+          </div>
+
+          <!-- Options Toggles -->
+          <div class="toggle-group">
+            <div class="toggle-item">
+              <span>Tumpuk Penalti (Stacking +2, +4, +6, +10)</span>
+              <input type="checkbox" id="setting-stacking" checked>
+            </div>
+            <div class="toggle-item">
+              <span>Aturan Kartu 0 & 7 (Pass / Swap Hand)</span>
+              <input type="checkbox" id="setting-seven-zero" checked>
+            </div>
+            <div class="toggle-item">
+              <span>Mercy Knockout (Gugur jika 25+ kartu)</span>
+              <input type="checkbox" id="setting-mercy" checked>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button id="btn-play-ai" class="btn-primary">
+              Main Langsung vs A.I.
+            </button>
+            <button id="btn-create-room" class="btn-secondary">
+              Buat Room Mabar Teman
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Gabung Room Teman -->
+        <div class="glass-panel card-box" style="justify-content: center;">
+          <div class="box-title">Gabung Room Teman</div>
+          <p style="font-size: 14px; color: #a4b0be; line-height: 1.5;">
+            Punya kode room dari temanmu? Masukkan kode 5 huruf di bawah ini untuk langsung bergabung ke meja permainan.
+          </p>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="join-room-input">Kode Room</label>
+            <input type="text" id="join-room-input" placeholder="Contoh: AB12C" maxlength="6" style="text-transform: uppercase; font-size: 18px; font-weight: 700; text-align: center; letter-spacing: 2px;">
+          </div>
+
+          <button id="btn-join-room" class="btn-primary" style="margin-top: 10px;">
+            Gabung Room
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 2: WAITING ROOM LOBBY
+         ============================================== -->
+    <div id="view-waiting-room" class="app-view waiting-room glass-panel" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="btn-leave-waiting" class="btn-secondary" style="padding: 6px 14px; font-size: 13px;">
+          ⬅️ Kembali ke Lobi
+        </button>
+      </div>
+
+      <div class="room-header">
+        <div>
+          <h2 style="font-size: 24px; font-weight: 800;">Ruang Tunggu Permainan</h2>
+          <p style="color: #a4b0be; font-size: 14px;">Bagikan kode room ini kepada temanmu untuk mabar.</p>
+        </div>
+        <div class="room-code-badge">
+          <span>KODE ROOM:</span>
+          <span id="display-room-code" class="room-code">XXXXX</span>
+          <button id="btn-copy-room" class="btn-secondary" style="padding: 6px 12px; font-size: 13px;">Salin</button>
+        </div>
+      </div>
+
+      <!-- Player Slots -->
+      <div>
+        <label>Daftar Pemain di Room:</label>
+        <div id="waiting-players-container" class="players-list"></div>
+      </div>
+
+      <!-- Host Controls -->
+      <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+        <button id="btn-add-bot" class="btn-secondary">
+          Tambah Bot A.I.
+        </button>
+        <button id="btn-start-game" class="btn-primary">
+          Mulai Permainan Sekarang!
+        </button>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 3: GAME ARENA (MEJA PERMAINAN)
+         ============================================== -->
+    <div id="view-game-arena" class="app-view game-arena" style="display: none;">
+      
+      <!-- Arena Nav Bar (Top Bar Terpadu: Rapi & Bebas Tabrakan) -->
+      <div class="arena-top-bar">
+        <div class="arena-top-left">
+          <button id="btn-toggle-log-mobile" class="btn-arena-icon" title="Lihat Riwayat Kartu">
+            📜 <span class="nav-btn-text">Log</span>
+          </button>
+          <button id="sound-toggle-btn-arena" class="btn-arena-icon" title="Toggle Suara">
+            🔊
+          </button>
+        </div>
+
+        <div class="arena-top-right">
+          <button id="btn-open-rules-arena" class="btn-arena-icon" title="Panduan Aturan">
+            📖 <span class="nav-btn-text">Aturan</span>
+          </button>
+          <button id="btn-leave-arena" class="btn-arena-icon btn-arena-danger" title="Keluar dari permainan ke lobi utama">
+            🚪 <span class="nav-btn-text">Keluar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Scrollable Game Log -->
+      <div id="game-log-panel-box" class="glass-panel game-log-panel">
+        <div class="log-panel-header">
+          <span class="log-panel-title">Aktivitas Permainan</span>
+          <button id="btn-toggle-log" class="btn-log-minimize" title="Tutup Log">✕</button>
+        </div>
+        <div id="game-log-entries" class="game-log-entries-scroll"></div>
+      </div>
+
+      <!-- Opponents Seat Bar (Atas) -->
+      <div id="opponents-container" class="opponents-bar"></div>
+
+      <!-- Center Table (Tumpukan Discard, Deck, dan Arah Putaran) -->
+      <div class="table-center">
+        <!-- Direction & Turn Status -->
+        <div class="turn-indicator">
+          <span id="direction-arrow" style="font-size: 18px; color: #ffd000;">↻</span>
+          <div id="active-color-dot" class="color-indicator-dot"></div>
+          <span id="turn-status-text">Menunggu giliran...</span>
+        </div>
+
+        <!-- Draw Deck -->
+        <div class="deck-wrapper">
+          <div id="draw-deck-pile" class="deck-pile" title="Klik untuk mengambil kartu">
+            <div class="uno-card">
+              <div class="card-face card-back">
+                <div class="card-back-oval">
+                  <span class="card-back-text">UNO</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span id="draw-deck-count" class="deck-count-pill">-- kartu</span>
+        </div>
+
+        <!-- Discard Pile -->
+        <div class="deck-wrapper">
+          <div id="discard-pile-container" class="deck-pile"></div>
+          <span style="font-size: 11px; color: #a4b0be; font-weight: 700;">Tumpukan Meja</span>
+        </div>
+
+        <!-- Warning Pending Penalty -->
+        <div id="pending-penalty-badge" style="display: none; position: absolute; bottom: -35px; background: #ff0055; color: #fff; font-weight: 800; font-size: 13px; padding: 4px 14px; border-radius: 12px; box-shadow: 0 0 14px rgba(255, 0, 85, 0.7); animation: pulse-uno 1s infinite;">
+          PENALTI BERTUMPUK
+        </div>
+      </div>
+
+      <!-- Player Hand Dock (Bawah) -->
+      <div class="player-dock">
+        <!-- Emote Speech Bubble Container for Local Player -->
+        <div id="local-player-speech-bubble" class="player-speech-bubble" style="display: none;"></div>
+
+        <div class="player-status-bar">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-weight: 700; font-size: 14px;">Kartu Anda:</span>
+            <span id="player-card-total" style="background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 800;">7 kartu</span>
+            
+            <!-- UNO Flip Peek Mode Button -->
+            <button id="btn-peek-flip-mode" class="btn-peek-flip" style="display: none;" title="Balik kartu di tangan untuk melihat sisi sebaliknya">
+              👁️ Intip Sisi Balik
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Combo Stacking Bar -->
+        <div id="combo-play-bar" class="combo-play-bar" style="display: none;">
+          <span id="combo-count-text" style="font-size: 13px; font-weight: 800; color: #ffd000;">2 Kartu Terpilih</span>
+          <button id="btn-play-combo" class="btn-primary" style="padding: 6px 16px; font-size: 12px; border-radius: 12px;">
+            💥 Tumpuk & Mainkan
+          </button>
+          <button id="btn-cancel-combo" class="btn-secondary" style="padding: 6px 12px; font-size: 11px; border-radius: 12px;">
+            Batal
+          </button>
+        </div>
+
+        <!-- Scrollable Hand Container -->
+        <div class="cards-hand-wrapper">
+          <div id="player-cards-container" class="cards-hand"></div>
+        </div>
+      </div>
+
+      <!-- Floating Action: UNO! Button & Emote Button -->
+      <div class="actions-dock">
+        <button id="btn-open-emotes" class="btn-secondary" style="border-radius: 20px; font-size: 13px; padding: 8px 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);">
+          💬 Emot & Reaksi
+        </button>
+        <button id="btn-call-uno" class="btn-uno" title="Tekan saat kartu tersisa 1!">UNO!</button>
+      </div>
+
+    </div>
+
+    <!-- ==============================================
+         MODAL 1: COLOR PICKER (WILD CARDS)
+         ============================================== -->
+    <div id="modal-color-picker" class="modal-overlay">
+      <div class="modal-content">
+        <h2 style="font-size: 22px; font-weight: 800;">Pilih Warna Selanjutnya</h2>
+        <p style="color: #a4b0be; font-size: 14px;">Pilih warna yang ingin Anda tentukan untuk putaran ini.</p>
+        <div id="color-picker-buttons" class="color-picker-grid"></div>
+        <div style="margin-top: 18px; display: flex; justify-content: center;">
+          <button id="btn-cancel-color-pick" class="btn-secondary" style="padding: 8px 18px; font-size: 13px; border-radius: 10px;">
+            ❌ Batal / Pilih Kartu Lain
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         MODAL 2: SWAP TARGET PICKER (NO MERCY 7)
+         ============================================== -->
+    <div id="modal-swap-picker" class="modal-overlay">
+      <div class="modal-content">
+        <h2 style="font-size: 22px; font-weight: 800;">Tukar Tangan (Kartu 7)</h2>
+        <p style="color: #a4b0be; font-size: 14px;">Pilih pemain lawan yang ingin Anda tukar seluruh kartunya!</p>
+        <div id="swap-targets-container" class="swap-targets-list"></div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         MODAL 3: GAME OVER & PODIUM RANKINGS
+         ============================================== -->
+    <div id="modal-game-over" class="modal-overlay">
+      <div class="modal-content">
+        <h2 id="winner-name-display" style="font-size: 28px; font-weight: 900; color: #ffd000;">🏆 Pemenang!</h2>
+        <p style="color: #ced6e0; font-size: 15px;">Permainan telah selesai!</p>
+        
+        <!-- Podium Rankings Display -->
+        <div id="game-over-rankings" class="rankings-podium-list" style="margin: 12px 0;"></div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
+          <button id="btn-restart-game" class="btn-primary" style="padding: 12px 24px;">Main Lagi</button>
+          <button onclick="location.reload()" class="btn-secondary" style="padding: 12px 24px;">Kembali ke Lobi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         MODAL 4: PANDUAN ATURAN (RULEBOOK IN-GAME)
+         ============================================== -->
+    <div id="modal-rulebook" class="modal-overlay">
+      <div class="modal-content rulebook-modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">
+          <h2 style="font-size: 22px; font-weight: 900; color: #ffd000;">📖 Buku Panduan Aturan UNO</h2>
+          <button id="btn-close-rules" class="btn-icon" style="width: 32px; height: 32px;">✕</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="rulebook-tabs">
+          <button class="tab-btn active" data-tab="tab-modes">Mode Permainan</button>
+          <button class="tab-btn" data-tab="tab-symbols">Simbol & Kartu Aksi</button>
+          <button class="tab-btn" data-tab="tab-rules">Aturan Khusus & UNO</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="rulebook-body">
+          <div id="tab-modes" class="rulebook-section active">
+            <div class="rule-item">
+              <h4>UNO Klasik (108 Kartu)</h4>
+              <p>Aturan resmi Mattel: Cocokkan kartu berdasarkan warna atau angka/simbol. Pemain pertama yang menghabiskan seluruh kartunya menang.</p>
+            </div>
+            <div class="rule-item">
+              <h4>UNO Flip (Dua Sisi: Light & Dark)</h4>
+              <p>Setiap kartu memiliki dua sisi. Sisi <strong>Light Side</strong> (Merah, Kuning, Hijau, Biru) dan <strong>Dark Side</strong> (Pink, Teal, Orange, Purple). Memainkan kartu <strong>Flip</strong> membalik seluruh meja dan tangan pemain ke sisi sebaliknya!</p>
+            </div>
+            <div class="rule-item">
+              <h4>UNO Show 'Em No Mercy (Brutal 168 Kartu)</h4>
+              <p>Edisi paling kejam dengan kartu penalti hingga +6 dan +10, penumpukan penalti tanpa ampun, tukar kartu 0 & 7, serta aturan eliminasi bagi pemain yang memegang 25 kartu atau lebih.</p>
+            </div>
+          </div>
+
+          <div id="tab-symbols" class="rulebook-section">
+            <div class="rule-item">
+              <h4>Skip (Lingkaran Diagonal)</h4>
+              <p>Melewati giliran pemain berikutnya.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Reverse (Dua Panah Berputar)</h4>
+              <p>Memutar balik arah putaran permainan (Searah jarum jam ↔ Berlawanan jarum jam).</p>
+            </div>
+            <div class="rule-item">
+              <h4>Draw (+1, +2, +4, +5, +6, +10)</h4>
+              <p>Memaksa pemain berikutnya mengambil kartu sebanyak angka penalti dan gilirannya dilewati (kecuali menumpuk kartu penalti).</p>
+            </div>
+            <div class="rule-item">
+              <h4>Flip (Dua Kartu Berputar)</h4>
+              <p>Membalik seluruh permainan antara Light Side dan Dark Side.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Skip Everyone (Dua Lingkaran)</h4>
+              <p>Melewati semua pemain sekaligus, giliran langsung kembali ke pemain yang mengeluarkan kartu ini.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Discard All (Kartu Menyebar)</h4>
+              <p>Membuang seluruh kartu di tangan yang warnanya sama dengan kartu ini sekaligus.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Color Roulette (Roda Warna)</h4>
+              <p>Pemain berikutnya wajib mengambil kartu terus-menerus sampai menemukan warna yang ditentukan.</p>
+            </div>
+          </div>
+
+          <div id="tab-rules" class="rulebook-section">
+            <div class="rule-item">
+              <h4>Aturan Teriakan "UNO!" (+1 Penalti Jika Lupa / Salah)</h4>
+              <p>• Saat kartu tersisa <strong>1 kartu</strong>, wajib segera menekan tombol <strong>"UNO!"</strong>. Jika lupa dan ditantang lawan, terkena <strong>penalti +1 kartu</strong>.<br>
+              • <strong>Peringatan UNO Palsu</strong>: Jika Anda menekan "UNO!" padahal kartu Anda bukan tersisa 1 (masih 2 kartu atau lebih), Anda langsung terkena <strong>penalti +1 kartu</strong>!</p>
+            </div>
+            <div class="rule-item">
+              <h4>Pemenang Sebelumnya Main Duluan (Next Game)</h4>
+              <p>Ketika bermain ronde berikutnya di room yang sama, pemain yang memenangkan game sebelumnya berhak mendapatkan giliran pertama.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Penumpukan Penalti (Stacking)</h4>
+              <p>Jika pemain sebelumnya memainkan kartu penalti draw, Anda bisa membalas dengan memainkan kartu penalti yang setara atau lebih tinggi (+2 di atas +2, +4 di atas +2/+4, +6, +10) sehingga korban berikutnya menanggung total kartu gabungan!</p>
+            </div>
+            <div class="rule-item">
+              <h4>Aturan Kartu 0 & 7 (No Mercy)</h4>
+              <p>• <strong>Kartu 0</strong>: Semua pemain wajib mengoper seluruh kartunya ke pemain sebelahnya searah putaran.<br>
+              • <strong>Kartu 7</strong>: Pemain yang membuang angka 7 berhak memilih pemain lain untuk bertukar seluruh isi tangan.</p>
+            </div>
+            <div class="rule-item">
+              <h4>Mercy Rule (Eliminasi 25 Kartu)</h4>
+              <p>Pemain yang memiliki <strong>25 kartu atau lebih</strong> di tangannya langsung <strong>GUGUR (Tereliminasi)</strong> dari permainan!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         MODAL 5: EMOTE & QUICK CHAT PICKER
+         ============================================== -->
+    <div id="modal-emote-picker" class="modal-overlay">
+      <div class="modal-content" style="max-width: 460px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 8px;">
+          <h2 style="font-size: 20px; font-weight: 800; color: #ffd000;">💬 Pilih Emot & Reaksi</h2>
+          <button id="btn-close-emotes" class="btn-icon" style="width: 32px; height: 32px;">✕</button>
+        </div>
+
+        <div class="emote-categories-tabs">
+          <button class="emote-tab-btn active" data-cat="cat-taunt">Ejekan</button>
+          <button class="emote-tab-btn" data-cat="cat-flex">Pamer</button>
+          <button class="emote-tab-btn" data-cat="cat-panic">Panik</button>
+          <button class="emote-tab-btn" data-cat="cat-chat">Sapaan</button>
+        </div>
+
+        <div class="emote-buttons-grid">
+          <!-- Ejekan -->
+          <div id="cat-taunt" class="emote-section active">
+            <button class="emote-btn" data-text="Haha kena lo!">Haha kena lo!</button>
+            <button class="emote-btn" data-text="Mau kartu lagi gak?">Mau kartu lagi gak?</button>
+            <button class="emote-btn" data-text="Nangis gak tuh?">Nangis gak tuh?</button>
+            <button class="emote-btn" data-text="Ez game banget!">Ez game banget!</button>
+            <button class="emote-btn" data-text="Yah, ke-skip kasian!">Yah, ke-skip kasian!</button>
+            <button class="emote-btn" data-text="Makan tuh penalti!">Makan tuh penalti!</button>
+          </div>
+
+          <!-- Pamer -->
+          <div id="cat-flex" class="emote-section">
+            <button class="emote-btn" data-text="Lihat kartu gue dong!">Lihat kartu gue dong!</button>
+            <button class="emote-btn" data-text="Udah pasti menang!">Udah pasti menang!</button>
+            <button class="emote-btn" data-text="Gak ada obat kartuku!">Gak ada obat kartuku!</button>
+            <button class="emote-btn" data-text="Sisa 1 kartu nih, siap-siap!">Sisa 1 kartu nih, siap-siap!</button>
+            <button class="emote-btn" data-text="Santai dulu gak sih?">Santai dulu gak sih?</button>
+          </div>
+
+          <!-- Panik -->
+          <div id="cat-panic" class="emote-section">
+            <button class="emote-btn" data-text="Waduh jangan serang gue!">Waduh jangan serang gue!</button>
+            <button class="emote-btn" data-text="Ampun bang jago!">Ampun bang jago!</button>
+            <button class="emote-btn" data-text="Sialan penaltinya banyak banget!">Sialan penaltinya banyak!</button>
+            <button class="emote-btn" data-text="Kartuku numpuk woy!">Kartuku numpuk woy!</button>
+            <button class="emote-btn" data-text="Gak ada kartu yang cocok!">Gak ada kartu cocok!</button>
+          </div>
+
+          <!-- Sapaan -->
+          <div id="cat-chat" class="emote-section">
+            <button class="emote-btn" data-text="Halo semua!">Halo semua!</button>
+            <button class="emote-btn" data-text="Good Game!">Good Game!</button>
+            <button class="emote-btn" data-text="Nice Play!">Nice Play!</button>
+            <button class="emote-btn" data-text="Giliranmu woy buruan!">Giliranmu woy buruan!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/game/constants.js"></script>
+  <script src="js/game/Deck.js"></script>
+  <script src="js/game/UnoGame.js"></script>
+  <script src="js/game/BotAI.js"></script>
+  <script src="js/network.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/client.js"></script>
+</body>
+</html>

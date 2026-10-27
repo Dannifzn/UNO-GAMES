@@ -1,0 +1,156 @@
+(function(root) {
+  const { MODES, COLORS } = (typeof module !== 'undefined' && module.exports && typeof require === 'function') 
+    ? require('./constants') 
+    : (root.UnoConstants || window.UnoConstants);
+
+  class Deck {
+    static createDeck(mode) {
+      if (mode === MODES.FLIP) {
+        return this.createFlipDeck();
+      } else if (mode === MODES.NO_MERCY) {
+        return this.createNoMercyDeck();
+      } else {
+        return this.createClassicDeck();
+      }
+    }
+
+    static createClassicDeck() {
+      const cards = [];
+      let idCounter = 1;
+      const colors = [COLORS.RED, COLORS.YELLOW, COLORS.GREEN, COLORS.BLUE];
+
+      colors.forEach(color => {
+        // 1x 0 card
+        cards.push({ id: `c_${idCounter++}`, color, value: '0', type: 'number' });
+
+        // 2x 1-9
+        for (let i = 1; i <= 9; i++) {
+          cards.push({ id: `c_${idCounter++}`, color, value: String(i), type: 'number' });
+          cards.push({ id: `c_${idCounter++}`, color, value: String(i), type: 'number' });
+        }
+
+        // 2x skip, reverse, draw2
+        for (let i = 0; i < 2; i++) {
+          cards.push({ id: `c_${idCounter++}`, color, value: 'skip', type: 'action' });
+          cards.push({ id: `c_${idCounter++}`, color, value: 'reverse', type: 'action' });
+          cards.push({ id: `c_${idCounter++}`, color, value: 'draw2', type: 'action' });
+        }
+      });
+
+      // 4x wild, 4x wild_draw4
+      for (let i = 0; i < 4; i++) {
+        cards.push({ id: `c_${idCounter++}`, color: COLORS.WILD, value: 'wild', type: 'wild' });
+        cards.push({ id: `c_${idCounter++}`, color: COLORS.WILD, value: 'wild_draw4', type: 'wild' });
+      }
+
+      return this.shuffle(cards);
+    }
+
+    static createFlipDeck() {
+      const cards = [];
+      let idCounter = 1;
+      const lightColors = [COLORS.RED, COLORS.YELLOW, COLORS.GREEN, COLORS.BLUE];
+      const darkColors = [COLORS.PINK, COLORS.TEAL, COLORS.ORANGE, COLORS.PURPLE];
+
+      const lightPool = [];
+      const darkPool = [];
+
+      lightColors.forEach(color => {
+        for (let i = 1; i <= 9; i++) {
+          lightPool.push({ color, value: String(i), type: 'number' });
+          lightPool.push({ color, value: String(i), type: 'number' });
+        }
+        for (let i = 0; i < 2; i++) {
+          lightPool.push({ color, value: 'draw1', type: 'action' });
+          lightPool.push({ color, value: 'reverse', type: 'action' });
+          lightPool.push({ color, value: 'skip', type: 'action' });
+          lightPool.push({ color, value: 'flip', type: 'action' });
+        }
+      });
+      for (let i = 0; i < 4; i++) {
+        lightPool.push({ color: COLORS.WILD, value: 'wild', type: 'wild' });
+        lightPool.push({ color: COLORS.WILD, value: 'wild_draw2', type: 'wild' });
+      }
+
+      darkColors.forEach(color => {
+        for (let i = 1; i <= 9; i++) {
+          darkPool.push({ color, value: String(i), type: 'number' });
+          darkPool.push({ color, value: String(i), type: 'number' });
+        }
+        for (let i = 0; i < 2; i++) {
+          darkPool.push({ color, value: 'draw5', type: 'action' });
+          darkPool.push({ color, value: 'reverse', type: 'action' });
+          darkPool.push({ color, value: 'skip_everyone', type: 'action' });
+          darkPool.push({ color, value: 'flip', type: 'action' });
+        }
+      });
+      for (let i = 0; i < 4; i++) {
+        darkPool.push({ color: COLORS.WILD, value: 'wild', type: 'wild' });
+        darkPool.push({ color: COLORS.WILD, value: 'wild_draw_color', type: 'wild' });
+      }
+
+      const shuffledLight = this.shuffle(lightPool);
+      const shuffledDark = this.shuffle(darkPool);
+
+      for (let i = 0; i < shuffledLight.length; i++) {
+        cards.push({
+          id: `f_${idCounter++}`,
+          light: shuffledLight[i],
+          dark: shuffledDark[i]
+        });
+      }
+
+      return this.shuffle(cards);
+    }
+
+    static createNoMercyDeck() {
+      const cards = [];
+      let idCounter = 1;
+      const colors = [COLORS.RED, COLORS.YELLOW, COLORS.GREEN, COLORS.BLUE];
+
+      colors.forEach(color => {
+        cards.push({ id: `nm_${idCounter++}`, color, value: '0', type: 'number' });
+        for (let i = 1; i <= 9; i++) {
+          cards.push({ id: `nm_${idCounter++}`, color, value: String(i), type: 'number' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: String(i), type: 'number' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: String(i), type: 'number' });
+        }
+        for (let i = 0; i < 3; i++) {
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'draw2', type: 'action' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'draw4', type: 'action' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'reverse', type: 'action' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'skip', type: 'action' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'skip_everyone', type: 'action' });
+          cards.push({ id: `nm_${idCounter++}`, color, value: 'discard_all', type: 'action' });
+        }
+      });
+
+      for (let i = 0; i < 8; i++) {
+        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild', type: 'wild' });
+      }
+      for (let i = 0; i < 4; i++) {
+        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild_draw6', type: 'wild' });
+        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild_draw10', type: 'wild' });
+        cards.push({ id: `nm_${idCounter++}`, color: COLORS.WILD, value: 'wild_reverse_draw4', type: 'wild' });
+      }
+
+      return this.shuffle(cards);
+    }
+
+    static shuffle(deck) {
+      const arr = [...deck];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Deck;
+  }
+  if (typeof window !== 'undefined') {
+    window.Deck = Deck;
+  }
+})(typeof self !== 'undefined' ? self : this);
