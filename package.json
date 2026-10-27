@@ -1,0 +1,14 @@
+{
+  "name": "uno-web",
+  "version": "1.0.0",
+  "description": "UNO Online Multiplayer & AI with Classic, Flip, and No Mercy modes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pngjs": "^7.0.0",
+    "socket.io": "^4.7.5"
+  }
+}
