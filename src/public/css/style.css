@@ -42,6 +42,12 @@ header {
   z-index: 100;
 }
 
+@media (max-width: 768px) {
+  header.in-game-header-hidden {
+    display: none !important;
+  }
+}
+
 .logo-wrapper {
   display: flex;
   align-items: center;
@@ -227,6 +233,29 @@ input[type="text"]:focus {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .card-box {
+    padding: 18px 12px;
+  }
+  .mode-selector {
+    gap: 6px;
+  }
+  .mode-label {
+    padding: 10px 4px;
+  }
+  .mode-card-preview {
+    width: 48px;
+    height: 72px;
+    margin-bottom: 6px;
+  }
+  .mode-label .mode-name {
+    font-size: 11px;
+  }
+  .mode-label .mode-desc {
+    font-size: 8.5px;
+  }
 }
 
 .mode-radio {
@@ -516,13 +545,80 @@ input[type="text"]:focus {
   background: radial-gradient(circle at center, #350813 0%, #1b040a 70%, #0b0104 100%);
 }
 
+/* Arena Nav Bar (Top Bar Terpadu: Rapi & Bebas Tabrakan) */
+.arena-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(10, 14, 20, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 40;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.arena-top-left, .arena-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-arena-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-arena-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-arena-danger {
+  background: rgba(255, 71, 87, 0.15);
+  border-color: rgba(255, 71, 87, 0.35);
+  color: #ff6b81;
+}
+
+.btn-arena-danger:hover {
+  background: rgba(255, 71, 87, 0.3);
+  border-color: #ff4757;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .arena-top-bar {
+    padding: 6px 10px;
+  }
+  .btn-arena-icon {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  .nav-btn-text {
+    font-size: 11px;
+  }
+}
+
 /* Opponents Seat Bar (Top / Sides) */
 .opponents-bar {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 16px;
-  padding: 14px 20px;
+  padding: 10px 16px;
   flex-wrap: wrap;
   z-index: 10;
 }
@@ -567,6 +663,33 @@ input[type="text"]:focus {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .opponents-bar {
+    gap: 8px;
+    padding: 6px 10px;
+    justify-content: center;
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .opponent-seat {
+    padding: 4px 8px;
+    gap: 6px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .opp-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+  .opp-cards-count {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
 }
 
 /* ========================================================
@@ -759,6 +882,23 @@ input[type="text"]:focus {
   z-index: 60;
 }
 
+@media (max-width: 768px) {
+  .actions-dock {
+    position: absolute;
+    right: 12px;
+    bottom: 160px; /* Above the player's cards so cards are NEVER obscured! */
+    gap: 8px;
+    z-index: 50;
+  }
+}
+
+@media (max-width: 450px) {
+  .actions-dock {
+    bottom: 145px;
+    right: 8px;
+  }
+}
+
 .btn-uno {
   width: 72px;
   height: 72px;
@@ -774,6 +914,30 @@ input[type="text"]:focus {
   box-shadow: 0 8px 24px rgba(237, 28, 36, 0.6);
   transition: all 0.2s ease;
   animation: pulse-uno 1.6s infinite;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .btn-uno {
+    width: 60px;
+    height: 60px;
+    font-size: 16px;
+    border-width: 3px;
+  }
+  #btn-open-emotes {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    border-radius: 14px !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .btn-uno {
+    width: 52px;
+    height: 52px;
+    font-size: 14px;
+  }
 }
 
 @keyframes pulse-uno {
@@ -789,7 +953,7 @@ input[type="text"]:focus {
 /* Game Log Panel */
 .game-log-panel {
   position: absolute;
-  top: 70px;
+  top: 54px;
   left: 20px;
   width: 280px;
   max-height: 240px;
@@ -801,6 +965,35 @@ input[type="text"]:focus {
   flex-direction: column;
   pointer-events: auto;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.game-log-panel.minimized {
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.game-log-panel.minimized .game-log-entries-scroll {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .game-log-panel {
+    display: none; /* Auto-hidden on mobile to keep arena clean! */
+    position: fixed;
+    top: 50px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: 380px;
+    margin: 0 auto;
+    max-height: 240px;
+    z-index: 100;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
+  }
+  .game-log-panel.mobile-open {
+    display: flex;
+  }
 }
 
 .log-panel-header {

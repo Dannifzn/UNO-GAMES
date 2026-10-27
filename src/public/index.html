@@ -185,23 +185,34 @@
          ============================================== -->
     <div id="view-game-arena" class="app-view game-arena" style="display: none;">
       
-      <!-- Interactive Scrollable Game Log (Kiri Atas) -->
+      <!-- Arena Nav Bar (Top Bar Terpadu: Rapi & Bebas Tabrakan) -->
+      <div class="arena-top-bar">
+        <div class="arena-top-left">
+          <button id="btn-toggle-log-mobile" class="btn-arena-icon" title="Lihat Riwayat Kartu">
+            📜 <span class="nav-btn-text">Log</span>
+          </button>
+          <button id="sound-toggle-btn-arena" class="btn-arena-icon" title="Toggle Suara">
+            🔊
+          </button>
+        </div>
+
+        <div class="arena-top-right">
+          <button id="btn-open-rules-arena" class="btn-arena-icon" title="Panduan Aturan">
+            📖 <span class="nav-btn-text">Aturan</span>
+          </button>
+          <button id="btn-leave-arena" class="btn-arena-icon btn-arena-danger" title="Keluar dari permainan ke lobi utama">
+            🚪 <span class="nav-btn-text">Keluar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Scrollable Game Log -->
       <div id="game-log-panel-box" class="glass-panel game-log-panel">
         <div class="log-panel-header">
           <span class="log-panel-title">Aktivitas Permainan</span>
-          <button id="btn-toggle-log" class="btn-log-minimize" title="Perkecil/Perbesar Log">−</button>
+          <button id="btn-toggle-log" class="btn-log-minimize" title="Tutup Log">✕</button>
         </div>
         <div id="game-log-entries" class="game-log-entries-scroll"></div>
-      </div>
-
-      <!-- Top Action Bar (Kanan Atas: Back button & Rulebook) -->
-      <div style="position: absolute; top: 16px; right: 20px; z-index: 50; display: flex; gap: 10px;">
-        <button id="btn-open-rules-arena" class="btn-header">
-          📖 Panduan Aturan
-        </button>
-        <button id="btn-leave-arena" class="btn-header" style="background: rgba(255, 71, 87, 0.2); border-color: rgba(255, 71, 87, 0.4); color: #ff6b81;" title="Keluar dari permainan ke lobi utama">
-          🚪 Keluar
-        </button>
       </div>
 
       <!-- Opponents Seat Bar (Atas) -->

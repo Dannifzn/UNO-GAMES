@@ -11,16 +11,44 @@ let pendingChosenColor = null;
 let isPeekActive = false;
 
 // Audio toggle
-document.getElementById('sound-toggle-btn').addEventListener('click', () => {
-  const enabled = soundManager.toggle();
-  document.getElementById('sound-toggle-btn').textContent = enabled ? '🔊' : '🔇';
-});
+function updateSoundIcons(enabled) {
+  const icon = enabled ? '🔊' : '🔇';
+  const b1 = document.getElementById('sound-toggle-btn');
+  if (b1) b1.textContent = icon;
+  const b2 = document.getElementById('sound-toggle-btn-arena');
+  if (b2) b2.textContent = icon;
+}
+
+const mainSoundBtn = document.getElementById('sound-toggle-btn');
+if (mainSoundBtn) {
+  mainSoundBtn.addEventListener('click', () => {
+    const enabled = soundManager.toggle();
+    updateSoundIcons(enabled);
+  });
+}
+
+const arenaSoundBtn = document.getElementById('sound-toggle-btn-arena');
+if (arenaSoundBtn) {
+  arenaSoundBtn.addEventListener('click', () => {
+    const enabled = soundManager.toggle();
+    updateSoundIcons(enabled);
+  });
+}
 
 // View switcher
 function showView(viewId) {
   document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
   const target = document.getElementById(viewId);
   if (target) target.style.display = 'flex';
+
+  const mainHeader = document.querySelector('header');
+  if (mainHeader) {
+    if (viewId === 'view-game-arena') {
+      mainHeader.classList.add('in-game-header-hidden');
+    } else {
+      mainHeader.classList.remove('in-game-header-hidden');
+    }
+  }
 }
 
 // ==========================================
@@ -183,11 +211,26 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // Minimize / Expand Game Log Panel
 const logPanel = document.getElementById('game-log-panel-box');
 const toggleLogBtn = document.getElementById('btn-toggle-log');
-if (toggleLogBtn && logPanel) {
-  toggleLogBtn.addEventListener('click', () => {
+const toggleLogMobileBtn = document.getElementById('btn-toggle-log-mobile');
+
+function toggleLogView() {
+  if (!logPanel) return;
+  // If screen width is <= 768px, toggle mobile-open
+  if (window.innerWidth <= 768) {
+    logPanel.classList.toggle('mobile-open');
+  } else {
     logPanel.classList.toggle('minimized');
-    toggleLogBtn.textContent = logPanel.classList.contains('minimized') ? '+' : '−';
-  });
+    if (toggleLogBtn) {
+      toggleLogBtn.textContent = logPanel.classList.contains('minimized') ? '+' : '✕';
+    }
+  }
+}
+
+if (toggleLogBtn) {
+  toggleLogBtn.addEventListener('click', toggleLogView);
+}
+if (toggleLogMobileBtn) {
+  toggleLogMobileBtn.addEventListener('click', toggleLogView);
 }
 
 // Peek Mode Toggle for UNO Flip
