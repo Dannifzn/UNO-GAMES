@@ -807,6 +807,18 @@ if (cancelColorPickBtn) {
   });
 }
 
+const cancelSwapPickBtn = document.getElementById('btn-cancel-swap-pick');
+if (cancelSwapPickBtn) {
+  cancelSwapPickBtn.addEventListener('click', () => {
+    document.getElementById('modal-swap-picker').classList.remove('active');
+    socket.emit('cancel_pending_action');
+    pendingSwapCardIds = null;
+    selectedComboCardIds = [];
+    updateComboBar();
+    UI.showToast('Penukaran kartu dibatalkan', 'info');
+  });
+}
+
 function onPlayCardClicked(card) {
   const myPlayer = currentGameState ? currentGameState.players.find(p => p.id === myPlayerId) : null;
   if (!myPlayer) return;
@@ -888,7 +900,8 @@ function executePlayCards(cardIds, chosenColor = null) {
   }
 
   // In No Mercy, 7 swaps hand
-  if (currentGameState.mode === 'no_mercy' && face.value === '7' && currentGameState.options.allowSevenZero) {
+  const allowSwap = currentGameState.allowSevenZero ?? currentGameState.options?.allowSevenZero ?? true;
+  if (currentGameState.mode === 'no_mercy' && face.value === '7' && allowSwap) {
     const opponents = currentGameState.players.filter(p => p.id !== myPlayerId && !p.eliminated && !p.finished);
     if (opponents.length > 0) {
       pendingSwapCardIds = cardIds;
@@ -959,6 +972,7 @@ function openSwapPicker(opponents, cardIds, chosenColor) {
     btn.addEventListener('click', () => {
       modal.classList.remove('active');
       const targetIds = pendingSwapCardIds || (cardIds ? (Array.isArray(cardIds) ? cardIds : [cardIds]) : null);
+      soundManager.playCard();
       socket.emit('play_card', {
         cardIds: targetIds,
         chosenColor,

@@ -722,6 +722,16 @@ class UnoGame {
       previousWinnerId: this.previousWinnerId,
       rankings: this.rankings,
       endGameCondition: this.endGameCondition,
+      allowSevenZero: this.allowSevenZero,
+      stacking: this.stacking,
+      mercyKnockout: this.mercyKnockout,
+      options: {
+        mode: this.mode,
+        allowSevenZero: this.allowSevenZero,
+        stacking: this.stacking,
+        mercyKnockout: this.mercyKnockout,
+        endGameCondition: this.endGameCondition
+      },
       deckTopOppositeFace: (this.mode === 'flip' && this.deck.length > 0) 
         ? (this.flipSide === 'light' ? this.deck[0].dark : this.deck[0].light) 
         : null,

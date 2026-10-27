@@ -126,7 +126,18 @@ class NetworkManager {
   broadcastLocalState() {
     if (!this.localGame) return;
     const state = this.localGame.getGameState(this.playerId);
-    this.trigger('game_state_update', state);
+    this.trigger('game_state_update', {
+      ...state,
+      roomId: this.roomId,
+      isHost: true,
+      options: {
+        mode: this.localGame.mode,
+        allowSevenZero: this.localGame.allowSevenZero,
+        stacking: this.localGame.stacking,
+        mercyKnockout: this.localGame.mercyKnockout,
+        endGameCondition: this.localGame.endGameCondition
+      }
+    });
   }
 
   handleLocalAction(event, data) {
@@ -469,8 +480,21 @@ class NetworkManager {
 
   broadcastP2PState() {
     if (!this.localGame) return;
+    const baseOptions = {
+      mode: this.localGame.mode,
+      allowSevenZero: this.localGame.allowSevenZero,
+      stacking: this.localGame.stacking,
+      mercyKnockout: this.localGame.mercyKnockout,
+      endGameCondition: this.localGame.endGameCondition
+    };
+
     // Broadcast tailored state to Host
-    this.trigger('game_state_update', this.localGame.getGameState(this.playerId));
+    this.trigger('game_state_update', {
+      ...this.localGame.getGameState(this.playerId),
+      roomId: this.roomId,
+      isHost: true,
+      options: baseOptions
+    });
 
     // Broadcast tailored state to each Guest
     this.connections.forEach(conn => {
@@ -478,7 +502,12 @@ class NetworkManager {
       const targetId = guestPlayer ? guestPlayer.id : null;
       conn.send({
         event: 'game_state_update',
-        data: this.localGame.getGameState(targetId)
+        data: {
+          ...this.localGame.getGameState(targetId),
+          roomId: this.roomId,
+          isHost: false,
+          options: baseOptions
+        }
       });
     });
   }
